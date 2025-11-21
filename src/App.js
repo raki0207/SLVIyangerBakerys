@@ -39,7 +39,7 @@ function AppContent() {
 
   return (
     // IMPORTANT FIX FOR GITHUB PAGES
-    <Router basename="/bakery">
+    <Router basename="/SLVIyangerBakerys">
       <LikedProductsProvider>
         <CartProvider>
           <FloatingButtonsProvider>
