@@ -94,7 +94,18 @@ const ContactUs = () => {
         <div className="map-section">
           <h2>Find Us On The Map</h2>
           <p>Visit our office for a face-to-face meeting</p>
-          <div className="map-placeholder">🗺️</div>
+          <div className="map-container">
+            <iframe
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d241.28367039015467!2d75.23435975718158!3d14.625333239434381!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bb959245c10fcc9%3A0x54c2421c9ffcd803!2sNEW%20MODERN%20MEN&#39;S%20PARLOUR!5e0!3m2!1sen!2sin!4v1763625514795!5m2!1sen!2sin"
+              width="100%"
+              height="450"
+              style={{ border: 0 }}
+              allowFullScreen=""
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              title="Raki Bakery Location"
+            ></iframe>
+          </div>
         </div>
       </div>
 

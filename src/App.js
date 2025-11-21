@@ -5,7 +5,7 @@ import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import ScrollToTop from './components/ScrollToTop';
 import Login from './components/Login';
-import Home from './pages/Home';
+import Home from './pages/index';
 import About from './pages/About';
 import Products from './pages/Products';
 import Connections from './pages/Connections';
@@ -45,16 +45,16 @@ function AppContent() {
           <FloatingButtonsProvider>
             <div className="App">
 
-              <Navbar 
-                onLoginClick={handleOpenLogin} 
+              <Navbar
+                onLoginClick={handleOpenLogin}
                 isLoggedIn={isLoggedIn}
                 onLogout={handleLogout}
               />
 
               {showLogin && (
-                <Login 
-                  onClose={handleCloseLogin} 
-                  onLoginSuccess={handleLoginSuccess} 
+                <Login
+                  onClose={handleCloseLogin}
+                  onLoginSuccess={handleLoginSuccess}
                 />
               )}
 

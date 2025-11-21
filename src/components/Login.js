@@ -384,11 +384,11 @@ const Login = ({ onClose, onLoginSuccess }) => {
           <div className="terms-section">
             <p>
               By continuing, you agree to our{' '}
-              <a href="/termsandconditions.html" target="_blank" rel="noopener noreferrer">
+              <a href={`${process.env.PUBLIC_URL}/termsandconditions.html`} target="_blank" rel="noopener noreferrer">
                 Terms & Conditions
               </a>{' '}
               and{' '}
-              <a href="/policy.html" target="_blank" rel="noopener noreferrer">
+              <a href={`${process.env.PUBLIC_URL}/policy.html`} target="_blank" rel="noopener noreferrer">
                 Privacy Policy
               </a>
             </p>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useLikedProducts } from '../context/LikedProductsContext';
 import { useCart } from '../context/CartContext';
 import { products } from '../utils/productsData';
@@ -15,7 +15,8 @@ const Products = () => {
   const [categoryFilter, setCategoryFilter] = useState('All Products');
   const [searchQuery, setSearchQuery] = useState(searchParams.get('search') || '');
   const { toggleLike, isLiked } = useLikedProducts();
-  const { addToCart, cartItems, updateQuantity, isInCart } = useCart();
+  const { addToCart, cartItems, updateQuantity, isInCart, getCartTotal, cartCount } = useCart();
+  const navigate = useNavigate();
 
   // Update search query when URL parameter changes
   useEffect(() => {
@@ -424,6 +425,23 @@ const Products = () => {
               </div>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* Cart Summary Banner */}
+      {cartItems.length > 0 && (
+        <div className="cart-summary-banner">
+          <div className="cart-summary-left">
+            <span className="cart-summary-price">₹ {getCartTotal().toFixed(2)}</span>
+            <span className="cart-summary-separator">|</span>
+            <span className="cart-summary-items">{cartCount} {cartCount === 1 ? 'item' : 'items'}</span>
+          </div>
+          <button 
+            className="cart-summary-view-btn"
+            onClick={() => navigate('/cart')}
+          >
+            View Cart →
+          </button>
         </div>
       )}
     </div>

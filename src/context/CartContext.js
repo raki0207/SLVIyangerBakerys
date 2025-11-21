@@ -233,7 +233,7 @@ export const CartProvider = ({ children }) => {
   const generateWhatsAppMessage = (orderData, orderId) => {
     const { userProfile, items, subtotal, tax, promoCode, discountAmount, total } = orderData;
     
-    let message = `🎬 *Book My Camera - New Order Request*\n\n`;
+    let message = `🎬 *SLV Iyangerbakery - New Order Request*\n\n`;
     
     message += `🆔 *Order ID:* ${orderId}\n\n`;
     

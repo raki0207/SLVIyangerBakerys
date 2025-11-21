@@ -575,6 +575,15 @@
   font-weight: 700;
 }
 
+.delete-icon {
+  color: red;
+  cursor: pointer;
+}
+
+.delete-icon:hover {
+  color: white;
+}
+
 /* Tablet and below */
 @media (max-width: 968px) {
   .cart-content {

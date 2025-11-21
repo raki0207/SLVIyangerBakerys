@@ -151,7 +151,7 @@ const Navbar = ({ onLoginClick, isLoggedIn, onLogout }) => {
           </button>
           <div className="navbar-logo-container" onClick={() => navigate('/')} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px' }}>
             <img 
-              src="/bakery-icon-logo.png" 
+              src={`${process.env.PUBLIC_URL}/bakery-icon-logo.png`} 
               alt="Raki Bakery Logo" 
               style={{ height: '45px', width: '90px' }}
               onError={(e) => {

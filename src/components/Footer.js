@@ -150,7 +150,7 @@ const Footer = () => {
                 <div className="logo">
                   <div className="logo-icon">
                     <img
-                      src="/bakery-icon-logo.png"
+                      src={`${process.env.PUBLIC_URL}/bakery-icon-logo.png`}
                       alt="SLV Bakery Logo"
                       style={{ height: '60px', width: 'auto', objectFit: 'contain' }}
                       onError={(e) => {

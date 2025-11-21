@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useLikedProducts } from '../context/LikedProductsContext';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
-import { FaHeart } from 'react-icons/fa';
+import { FaHeart, FaLock, FaHourglassHalf, FaStar } from 'react-icons/fa';
 import './Favorites.css';
 
 const Favorites = () => {
@@ -53,7 +53,7 @@ const Favorites = () => {
     return (
       <div className="favorites-container">
         <div className="empty-favorites">
-          <div className="empty-icon">🔒</div>
+          <div className="empty-icon"><FaLock /></div>
           <h2>Please login to view your favorites</h2>
           <p>Sign in to access your saved products and favorites</p>
           <a href="/" className="browse-products-btn">Go to Login</a>
@@ -67,7 +67,7 @@ const Favorites = () => {
     return (
       <div className="favorites-container">
         <div className="empty-favorites">
-          <div className="empty-icon">⏳</div>
+          <div className="empty-icon"><FaHourglassHalf /></div>
           <h2>Loading your favorites...</h2>
           <p>Please wait while we fetch your saved products</p>
         </div>
@@ -127,7 +127,7 @@ const Favorites = () => {
                   <h3>{product.name}</h3>
                   {product.rating && (
                     <div className="favorite-rating">
-                      <span className="rating-stars">⭐ {product.rating}</span>
+                      <span className="rating-stars"><FaStar /> {product.rating}</span>
                       {product.reviews && (
                         <span className="rating-reviews">({product.reviews} reviews)</span>
                       )}
@@ -208,7 +208,7 @@ const Favorites = () => {
                 <h2>{selectedProduct.name}</h2>
                 {selectedProduct.rating && (
                   <div className="modal-rating">
-                    <span className="rating-stars">⭐ {selectedProduct.rating}</span>
+                    <span className="rating-stars"><FaStar /> {selectedProduct.rating}</span>
                     {selectedProduct.reviews && (
                       <span className="rating-reviews">({selectedProduct.reviews} reviews)</span>
                     )}

@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
-import './Home.css';
+import './index.css';
 import {
-  FaRocket, FaLock, FaStar, FaEnvelope, FaMapMarkerAlt, FaInstagram, FaLinkedin, FaPhone, FaWhatsapp, FaArrowRight
+  FaRocket, FaLock, FaStar, FaEnvelope, FaMapMarkerAlt, FaInstagram, FaLinkedin, FaPhone, FaWhatsapp, FaArrowRight,
+  FaMinus, FaPlus, FaTimes, FaCheck, FaShoppingCart, FaClock, FaSync, FaLayerGroup, FaQuoteLeft
 } from 'react-icons/fa';
 import { useLikedProducts } from '../context/LikedProductsContext';
 import { useCart } from '../context/CartContext';
@@ -26,12 +27,19 @@ const Home = () => {
   const [justArrivedIndex, setJustArrivedIndex] = useState(0);
   const [justBakedProducts, setJustBakedProducts] = useState([]);
   const [justBakedIndex, setJustBakedIndex] = useState(0);
+  const [statisticsValues, setStatisticsValues] = useState({
+    teamMembers: 0,
+    yearsExperience: 0,
+    productsMenu: 0,
+    awardsWon: 0
+  });
+  const [hasAnimated, setHasAnimated] = useState(false);
 
   // Hero slideshow images
   const heroImages = [
-    '/assets/background/baked-image1.jpg',
-    '/assets/background/bakerimgnew.png',
-    '/assets/background/bakerimg.png'
+    `${process.env.PUBLIC_URL}/baked-image1.jpg`,
+    `${process.env.PUBLIC_URL}/bakerimgnew.png`,
+    `${process.env.PUBLIC_URL}/bakerimg.png`
   ];
 
   // Individual catalogues for sections
@@ -72,6 +80,7 @@ const Home = () => {
       isFresh: true,
       freshnessTag: 'Chef’s pick'
     },
+
     {
       id: 203,
       name: 'Salted Caramel Éclair Box',
@@ -86,7 +95,7 @@ const Home = () => {
       fullDescription: 'Each éclair is piped to order, dipped in amber caramel, and garnished with house-made almond brittle for a delightful crunch in every bite.',
       features: ['Madagascar vanilla beans', 'Small batch caramel', 'Crunchy almond brittle topping', 'Delivered chilled', 'Perfect for gifting'],
       specifications: { 'Pieces': '6 éclairs', 'Allergens': 'Gluten, Dairy, Eggs, Nuts', 'Best Before': '24 hours refrigerated', 'Serving Suggestion': 'Best enjoyed chilled' },
-      arrivalDate: '2025-11-09',
+      arrivalDate: '2025-11-14',
       isFresh: true,
       freshnessTag: 'Hand-piped'
     },
@@ -104,7 +113,7 @@ const Home = () => {
       fullDescription: 'We slow-bake our seasonal cheesecake for a rustic caramelised finish, pairing autumn spices with locally sourced pumpkin for a melt-in-the-mouth texture.',
       features: ['Roasted heirloom pumpkin', 'Cinnamon-ginger spice blend', 'Naturally gluten-free base', 'Caramelised sugar top', 'Autumn limited release'],
       specifications: { 'Size': '1.3 kg', 'Serves': '12 people', 'Allergens': 'Dairy, Eggs', 'Best Before': '48 hours refrigerated' },
-      arrivalDate: '2025-11-07',
+      arrivalDate: '2025-11-19',
       isFresh: true,
       freshnessTag: 'Seasonal drop'
     }
@@ -285,27 +294,15 @@ const Home = () => {
     for (let i = 0; i < 5; i++) {
       if (i < fullStars) {
         stars.push(
-          <svg key={i} xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="#ffc107" stroke="#ffc107" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
-          </svg>
+          <FaStar key={i} style={{ width: '14px', height: '14px', color: '#ffc107', fill: '#ffc107' }} />
         );
       } else if (i === fullStars && hasHalfStar) {
         stars.push(
-          <svg key={i} xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="url(#half)" stroke="#ffc107" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <defs>
-              <linearGradient id="half">
-                <stop offset="50%" stopColor="#ffc107" />
-                <stop offset="50%" stopColor="transparent" />
-              </linearGradient>
-            </defs>
-            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
-          </svg>
+          <FaStar key={i} style={{ width: '14px', height: '14px', color: '#ffc107' }} className="half-star" />
         );
       } else {
         stars.push(
-          <svg key={i} xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ddd" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
-          </svg>
+          <FaStar key={i} style={{ width: '14px', height: '14px', color: '#ddd' }} />
         );
       }
     }
@@ -416,6 +413,56 @@ const Home = () => {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  // Statistics count-up animation
+  useEffect(() => {
+    if (!visibleSections.has('statistics-section') || hasAnimated) {
+      return;
+    }
+
+    const animateNumber = (target, current, setter) => {
+      const startValue = current;
+      const endValue = target;
+      const startTime = Date.now();
+      const duration = 2000;
+
+      const animate = () => {
+        const elapsed = Date.now() - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+
+        // Easing function for smooth animation
+        const easeOutCubic = 1 - Math.pow(1 - progress, 3);
+        const currentValue = Math.floor(startValue + (endValue - startValue) * easeOutCubic);
+
+        setter(currentValue);
+
+        if (progress < 1) {
+          requestAnimationFrame(animate);
+        } else {
+          setter(endValue);
+        }
+      };
+
+      animate();
+    };
+
+    // Start animations
+    animateNumber(12, 0, (value) => {
+      setStatisticsValues(prev => ({ ...prev, teamMembers: value }));
+    });
+    animateNumber(10, 0, (value) => {
+      setStatisticsValues(prev => ({ ...prev, yearsExperience: value }));
+    });
+    animateNumber(65, 0, (value) => {
+      setStatisticsValues(prev => ({ ...prev, productsMenu: value }));
+    });
+    animateNumber(4, 0, (value) => {
+      setStatisticsValues(prev => ({ ...prev, awardsWon: value }));
+    });
+
+    // Mark as animated to prevent re-running
+    setHasAnimated(true);
+  }, [visibleSections, hasAnimated]);
 
   // Form handling
   const handleFormChange = (e) => {
@@ -717,59 +764,6 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Services We Offer */}
-      <section
-        id="services-section"
-        ref={(el) => sectionRefs.current['services-section'] = el}
-        className={`services-section ${visibleSections.has('services-section') ? 'animate-in' : 'animate-out'}`}
-      >
-        <div className="container">
-          <h2 className="gradient-text-primary">Services We Offer</h2>
-          <p className="subtitle">Made-to-order treats and catering for every occasion</p>
-          <div className="services-grid">
-            <div className="service-card">
-              <div className="service-image" style={{ backgroundImage: "url('https://images.unsplash.com/photo-1553413077-190dd305871c?w=400&h=400&fit=crop')" }}></div>
-              <div className="service-content">
-                <h3>Custom Cakes & Events</h3>
-                <p>Celebrate every occasion with stunning centrepiece cakes crafted by our pastry chefs.</p>
-                <ul className="service-features">
-                  <li>Weddings, birthdays, and corporate celebrations</li>
-                  <li>Personalised flavours, fillings, and finishes</li>
-                  <li>Design consultations and on-time delivery</li>
-                </ul>
-                <div className="service-buttons">
-                  <a href="/menu" className="btn btn-outline">
-                    <FaRocket />View Signature Cakes
-                  </a>
-                  <a href="/contact" className="btn btn-primary">
-                    <FaStar />Plan Your Event
-                  </a>
-                </div>
-              </div>
-            </div>
-
-            <div className="service-card">
-              <div className="service-image" style={{ backgroundImage: "url('https://images.unsplash.com/photo-1556761175-b413da4baf72?w=400&h=400&fit=crop')" }}></div>
-              <div className="service-content">
-                <h3>Bakery Catering Packages</h3>
-                <p>Curated sweet and savoury platters perfect for meetings, launches, and family gatherings.</p>
-                <ul className="service-features">
-                  <li>Breakfast, high-tea, and dessert spreads</li>
-                  <li>Freshly baked, locally sourced ingredients</li>
-                  <li>Doorstep delivery across the city</li>
-                  <li>Customisable menus for dietary needs</li>
-                </ul>
-                <div className="service-buttons">
-                  <a href="/catering" className="btn btn-primary">
-                    <FaStar />Explore Catering Plans
-                  </a>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* Why Choose Our Bakery */}
       <section
         id="why-choose-section"
@@ -820,10 +814,7 @@ const Home = () => {
             <div className="testimonial-card">
               <div className="testimonial-content">
                 <div className="quote-icon">
-                  <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1z" />
-                    <path d="M15 21c3 0 7-1 7-8V5c0-1.25-.757-2.017-2-2h-4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2h.75c0 2.25.25 4-2.75 4v3c0 1 0 1 1 1z" />
-                  </svg>
+                  <FaQuoteLeft style={{ width: '40px', height: '40px' }} />
                 </div>
                 <p className="testimonial-text">"The custom cake was a showstopper—looked stunning and tasted even better. Delivery was perfectly on time."</p>
                 <div className="testimonial-rating">
@@ -843,10 +834,7 @@ const Home = () => {
             <div className="testimonial-card">
               <div className="testimonial-content">
                 <div className="quote-icon">
-                  <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1z" />
-                    <path d="M15 21c3 0 7-1 7-8V5c0-1.25-.757-2.017-2-2h-4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2h.75c0 2.25.25 4-2.75 4v3c0 1 0 1 1 1z" />
-                  </svg>
+                  <FaQuoteLeft style={{ width: '40px', height: '40px' }} />
                 </div>
                 <p className="testimonial-text">"Their weekend brunch box is my go-to treat. Fresh, indulgent, and different every single time."</p>
                 <div className="testimonial-rating">
@@ -867,10 +855,7 @@ const Home = () => {
             <div className="testimonial-card">
               <div className="testimonial-content">
                 <div className="quote-icon">
-                  <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1z" />
-                    <path d="M15 21c3 0 7-1 7-8V5c0-1.25-.757-2.017-2-2h-4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2h.75c0 2.25.25 4-2.75 4v3c0 1 0 1 1 1z" />
-                  </svg>
+                  <FaQuoteLeft style={{ width: '40px', height: '40px' }} />
                 </div>
                 <p className="testimonial-text">"Our office loved the dessert platter. The team handled special dietary requests with ease."</p>
                 <div className="testimonial-rating">
@@ -891,25 +876,179 @@ const Home = () => {
         </div>
       </section>
 
-      {/* CTA: Custom Quote */}
+      {/* Statistics Section */}
       <section
-        id="cta-section"
-        ref={(el) => sectionRefs.current['cta-section'] = el}
-        className={`cta-section ${visibleSections.has('cta-section') ? 'animate-in' : 'animate-out'}`}
+        id="statistics-section"
+        ref={(el) => sectionRefs.current['statistics-section'] = el}
+        className={`statistics-section ${visibleSections.has('statistics-section') ? 'animate-in' : 'animate-out'}`}
+      >
+        <div className="statistics-container">
+          <div className="statistics-banner">
+            <div className="statistics-item">
+              <div className="statistics-bg" style={{ backgroundImage: "url('https://images.unsplash.com/photo-1555507036-ab1f4038808a?w=400&h=300&fit=crop')" }}></div>
+              <div className="statistics-overlay"></div>
+              <div className="statistics-content">
+                <div className="statistics-number">{statisticsValues.teamMembers}</div>
+                <div className="statistics-label">TEAM MEMBERS</div>
+              </div>
+            </div>
+            <div className="statistics-item">
+              <div className="statistics-bg" style={{ backgroundImage: "url('https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=400&h=300&fit=crop')" }}></div>
+              <div className="statistics-overlay"></div>
+              <div className="statistics-content">
+                <div className="statistics-number">{statisticsValues.yearsExperience}</div>
+                <div className="statistics-label">YEARS OF EXPERIENCE</div>
+              </div>
+            </div>
+            <div className="statistics-item">
+              <div className="statistics-bg" style={{ backgroundImage: "url('https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=400&h=300&fit=crop')" }}></div>
+              <div className="statistics-overlay"></div>
+              <div className="statistics-content">
+                <div className="statistics-number">{statisticsValues.productsMenu}</div>
+                <div className="statistics-label">PRODUCTS IN MENU</div>
+              </div>
+            </div>
+            <div className="statistics-item">
+              <div className="statistics-bg" style={{ backgroundImage: "url('https://images.unsplash.com/photo-1486427944299-d1955d23e34d?w=400&h=300&fit=crop')" }}></div>
+              <div className="statistics-overlay"></div>
+              <div className="statistics-content">
+                <div className="statistics-number">{statisticsValues.awardsWon}</div>
+                <div className="statistics-label">AWARDS WON</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Promotional Section */}
+      <section
+        id="promotional-section"
+        ref={(el) => sectionRefs.current['promotional-section'] = el}
+        className={`promotional-section ${visibleSections.has('promotional-section') ? 'animate-in' : 'animate-out'}`}
+      >
+        <div className="promotional-container">
+          <div className="promotional-grid">
+            {/* Decorative SVG curved lines */}
+            <svg className="promotional-curve curve-1" viewBox="0 0 200 200" preserveAspectRatio="none">
+              <path d="M 0 100 Q 50 50, 100 100 T 200 100" stroke="rgba(200, 200, 200, 0.25)" strokeWidth="2" fill="none" />
+            </svg>
+            <svg className="promotional-curve curve-2" viewBox="0 0 200 200" preserveAspectRatio="none">
+              <path d="M 0 100 Q 50 150, 100 100 T 200 100" stroke="rgba(200, 200, 200, 0.25)" strokeWidth="2" fill="none" />
+            </svg>
+
+            {/* Left Column - Images */}
+            <div className="promotional-left-column">
+              <div className="promotional-image-panel top-left">
+                <img src="https://images.unsplash.com/photo-1555507036-ab1f4038808a?w=600&h=400&fit=crop" alt="Bakery team member" />
+              </div>
+              <div className="promotional-image-panel bottom-left">
+                <img src="https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=600&h=400&fit=crop" alt="Bakery display counter" />
+              </div>
+            </div>
+
+            {/* Central Content */}
+            <div className="promotional-content">
+              <div className="promotional-price">ONLY 59₹</div>
+              <p className="promotional-message">Make a difference and choose THE BEST for your business !</p>
+              <div className="promotional-cta">
+                <button className="promotional-button">PURCHASE NOW</button>
+                <div className="promotional-puff">
+                  <img src="https://images.unsplash.com/photo-1555507036-ab1f4038808a?w=150&h=150&fit=crop" alt="Cream puff" />
+                </div>
+              </div>
+            </div>
+
+            {/* Right Column - Images */}
+            <div className="promotional-right-column">
+              <div className="promotional-image-panel top-right">
+                <img src="https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=600&h=400&fit=crop" alt="Naked cake with berries" />
+              </div>
+              <div className="promotional-image-panel bottom-right">
+                <img src="https://images.unsplash.com/photo-1486427944299-d1955d23e34d?w=600&h=400&fit=crop" alt="Dessert table" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Best Bakery Section */}
+      <section
+        id="best-bakery-section"
+        ref={(el) => sectionRefs.current['best-bakery-section'] = el}
+        className={`best-bakery-section ${visibleSections.has('best-bakery-section') ? 'animate-in' : 'animate-out'}`}
       >
         <div className="container">
-          <div className="cta-content">
-            <div className="cta-text">
-              <h2 className="gradient-text-primary">Need a Custom Celebration Cake?</h2>
-              <p>Share your theme and guest list — we will design a dessert spread that delights everyone.</p>
+          {/* Decorative wavy lines background */}
+          <svg className="best-bakery-curves" viewBox="0 0 1200 800" preserveAspectRatio="none">
+            <path d="M 0 200 Q 150 100, 300 200 T 600 200 T 900 200 T 1200 200" stroke="rgba(200, 200, 200, 0.25)" strokeWidth="2" fill="none" />
+            <path d="M 0 400 Q 200 350, 400 400 T 800 400 T 1200 400" stroke="rgba(200, 200, 200, 0.25)" strokeWidth="2" fill="none" />
+            <path d="M 0 600 Q 100 550, 200 600 T 400 600 T 600 600 T 800 600 T 1000 600 T 1200 600" stroke="rgba(200, 200, 200, 0.25)" strokeWidth="2" fill="none" />
+          </svg>
+
+          {/* Title Section */}
+          <div className="best-bakery-header">
+            <p className="best-bakery-subtitle">THE BEST BAKERY</p>
+            <h2 className="best-bakery-title">Raki Artisanal Bakes</h2>
+          </div>
+
+          {/* Features Grid */}
+          <div className="best-bakery-features">
+            <div className="best-bakery-feature">
+              <div className="best-bakery-icon">
+                <FaRocket style={{ width: '50px', height: '50px' }} />
+              </div>
+              <p className="best-bakery-feature-label">FRESHLY BAKED</p>
             </div>
-            <div className="cta-button">
-              <a href="/contact" className="cta-btn">
-                <span>Start Planning</span>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M5 12h14M12 5l7 7-7 7" />
-                </svg>
-              </a>
+
+            <div className="best-bakery-feature">
+              <div className="best-bakery-icon">
+                <FaClock style={{ width: '50px', height: '50px' }} />
+              </div>
+              <p className="best-bakery-feature-label">ON-TIME DELIVERY</p>
+            </div>
+
+            <div className="best-bakery-feature">
+              <div className="best-bakery-icon">
+                <FaSync style={{ width: '50px', height: '50px' }} />
+              </div>
+              <p className="best-bakery-feature-label">DAILY FRESH STOCK</p>
+            </div>
+
+            <div className="best-bakery-feature">
+              <div className="best-bakery-icon">
+                <FaPlus style={{ width: '50px', height: '50px' }} />
+              </div>
+              <p className="best-bakery-feature-label">CUSTOM ORDERS</p>
+            </div>
+
+            <div className="best-bakery-feature">
+              <div className="best-bakery-icon">
+                <FaLayerGroup style={{ width: '50px', height: '50px' }} />
+              </div>
+              <p className="best-bakery-feature-label">VARIETY OF ITEMS</p>
+            </div>
+
+            <div className="best-bakery-feature">
+              <div className="best-bakery-icon">
+                <FaShoppingCart style={{ width: '50px', height: '50px' }} />
+              </div>
+              <p className="best-bakery-feature-label">ONLINE ORDERING</p>
+            </div>
+          </div>
+
+          {/* Testimonial Section */}
+          <div className="best-bakery-testimonial">
+            <p className="best-bakery-testimonial-text">
+              Professional presentation, clean layout, and a warm, inviting design—just like a perfect bakery. We truly appreciate the smooth customer experience, which feels as delightful as it looks. Highly recommended!!!
+            </p>
+            <div className="best-bakery-testimonial-author">
+              <div className="best-bakery-author-avatar">
+                <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop" alt="Kaylee Addison" />
+              </div>
+              <div className="best-bakery-author-info">
+                <h4 className="best-bakery-author-name">Robert Rakesh</h4>
+                <p className="best-bakery-author-role">SLV Iyanger Bakery</p>
+              </div>
             </div>
           </div>
         </div>
@@ -1071,10 +1210,7 @@ const Home = () => {
         <div className={`modal-overlay ${showModal ? 'active' : ''}`} onClick={closeModal}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <button className="modal-close" onClick={closeModal}>
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <line x1="18" y1="6" x2="6" y2="18"></line>
-                <line x1="6" y1="6" x2="18" y2="18"></line>
-              </svg>
+              <FaTimes style={{ width: '24px', height: '24px' }} />
             </button>
 
             <div className="modal-header">
@@ -1112,9 +1248,7 @@ const Home = () => {
                 <ul className="features-list">
                   {selectedProduct.features.map((feature, index) => (
                     <li key={index}>
-                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <polyline points="20 6 9 17 4 12"></polyline>
-                      </svg>
+                      <FaCheck style={{ width: '20px', height: '20px' }} />
                       {feature}
                     </li>
                   ))}
@@ -1141,9 +1275,7 @@ const Home = () => {
                       onClick={() => handleQuantityChange(selectedProduct, getProductQuantity(selectedProduct.id) - 1)}
                       aria-label="Decrease quantity"
                     >
-                      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <line x1="5" y1="12" x2="19" y2="12"></line>
-                      </svg>
+                      <FaMinus style={{ width: '18px', height: '18px' }} />
                     </button>
                     <span className="modal-quantity-value-home">{getProductQuantity(selectedProduct.id)}</span>
                     <button
@@ -1151,10 +1283,7 @@ const Home = () => {
                       onClick={() => handleQuantityChange(selectedProduct, getProductQuantity(selectedProduct.id) + 1)}
                       aria-label="Increase quantity"
                     >
-                      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <line x1="12" y1="5" x2="12" y2="19"></line>
-                        <line x1="5" y1="12" x2="19" y2="12"></line>
-                      </svg>
+                      <FaPlus style={{ width: '18px', height: '18px' }} />
                     </button>
                   </div>
                 ) : (
@@ -1162,11 +1291,7 @@ const Home = () => {
                     className="modal-cart-btn"
                     onClick={() => handleAddToCart(selectedProduct)}
                   >
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <circle cx="9" cy="21" r="1"></circle>
-                      <circle cx="20" cy="21" r="1"></circle>
-                      <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
-                    </svg>
+                    <FaShoppingCart style={{ width: '20px', height: '20px' }} />
                     Add to Cart
                   </button>
                 )}
