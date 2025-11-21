@@ -94,7 +94,7 @@ const Cart = () => {
           <div className="empty-icon"><FaLock /></div>
           <h3>Please login to view your cart</h3>
           <p>Sign in to access your shopping cart and saved items</p>
-          <a href="/" className="continue-shopping-btn">Go to Login</a>
+          <a href={`${process.env.PUBLIC_URL}/`} className="continue-shopping-btn">Go to Login</a>
         </div>
       </div>
     );
@@ -136,7 +136,7 @@ const Cart = () => {
               <div className="empty-icon"><FaShoppingCart /></div>
               <h3>Your cart is empty</h3>
               <p>Add some items to get started!</p>
-              <a href="/products" className="continue-shopping-btn">Continue Shopping</a>
+              <a href={`${process.env.PUBLIC_URL}/products`} className="continue-shopping-btn">Continue Shopping</a>
             </div>
           ) : (
             <div className="cart-items">

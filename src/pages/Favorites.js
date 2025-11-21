@@ -56,7 +56,7 @@ const Favorites = () => {
           <div className="empty-icon"><FaLock /></div>
           <h2>Please login to view your favorites</h2>
           <p>Sign in to access your saved products and favorites</p>
-          <a href="/" className="browse-products-btn">Go to Login</a>
+          <a href={`${process.env.PUBLIC_URL}/`} className="browse-products-btn">Go to Login</a>
         </div>
       </div>
     );
@@ -92,7 +92,7 @@ const Favorites = () => {
           <div className="empty-icon"><FaHeart /></div>
           <h2>No Favorites Yet</h2>
           <p>Start exploring our products and click the heart icon to save your favorites here!</p>
-          <a href="/products" className="browse-products-btn">Browse Products</a>
+          <a href={`${process.env.PUBLIC_URL}/products`} className="browse-products-btn">Browse Products</a>
         </div>
       ) : (
         <div className="favorites-grid">

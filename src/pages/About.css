@@ -167,51 +167,6 @@
   font-size: 0.95rem;
 }
 
-/* Mission & Vision Section */
-.mission-vision-section {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 40px;
-  margin-bottom: 60px;
-  padding: 0 20px;
-}
-
-.mission-card,
-.vision-card {
-  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-  padding: 50px 40px;
-  border-radius: 25px;
-  color: white;
-  text-align: center;
-  box-shadow: 0 10px 30px rgba(245, 87, 108, 0.3);
-  transition: all 0.3s ease;
-}
-
-.mission-card:hover,
-.vision-card:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 20px 40px rgba(245, 87, 108, 0.4);
-}
-
-.mv-icon {
-  font-size: 4rem;
-  margin-bottom: 20px;
-}
-
-.mission-card h3,
-.vision-card h3 {
-  font-size: 2rem;
-  margin-bottom: 20px;
-  font-weight: 700;
-}
-
-.mission-card p,
-.vision-card p {
-  font-size: 1.1rem;
-  line-height: 1.7;
-  opacity: 0.95;
-}
-
 /* Why Choose Us Section */
 .why-choose-section {
   background: linear-gradient(135deg, #e0f7fa 0%, #f3e5f5 100%);
@@ -719,11 +674,6 @@
   .stats-section {
     grid-template-columns: 1fr;
     gap: 20px;
-  }
-
-  .mission-vision-section {
-    grid-template-columns: 1fr;
-    gap: 30px;
   }
 
   .why-grid {

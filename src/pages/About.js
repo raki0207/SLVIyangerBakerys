@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './About.css';
 import {
-  FaBullseye,FaEye,FaRocket,FaGem,FaShieldAlt,FaComments,FaMoneyBillWave,FaTrophy,FaHandshake,FaBolt,FaFistRaised,
+  FaRocket,FaGem,FaShieldAlt,FaComments,FaMoneyBillWave,FaTrophy,FaHandshake,FaBolt,FaFistRaised,
   FaHeart,FaUserTie,FaEnvelope,FaPhone,FaMapMarkerAlt,FaCookieBite,FaBirthdayCake,FaBreadSlice,
   FaFire,FaLeaf,FaClock,FaAward,FaUtensils
 } from 'react-icons/fa';
@@ -40,20 +40,6 @@ const About = () => {
               <FaBreadSlice />
             </div>
           )}
-        </div>
-      </div>
-
-      {/* Mission & Vision */}
-      <div className="mission-vision-section">
-        <div className="mission-card">
-          <div className="mv-icon"><FaBullseye /></div>
-          <h3>Our Mission</h3>
-          <p>To bring joy and warmth to every home through our freshly baked goods, made with premium ingredients, traditional recipes, and a whole lot of love. We're committed to creating memorable moments, one delicious treat at a time.</p>
-        </div>
-        <div className="vision-card">
-          <div className="mv-icon"><FaEye /></div>
-          <h3>Our Vision</h3>
-          <p>To become the most beloved bakery in our community, known for exceptional quality, authentic flavors, and the warm, welcoming experience that makes every customer feel like family.</p>
         </div>
       </div>
 
