@@ -5,7 +5,9 @@ import {
   createUserWithEmailAndPassword, 
   signInWithEmailAndPassword,
   updateProfile,
-  sendPasswordResetEmail 
+  sendPasswordResetEmail,
+  sendEmailVerification,
+  signOut
 } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
 
@@ -24,6 +26,7 @@ const Login = ({ onClose, onLoginSuccess }) => {
     pincode: ''
   });
   const [error, setError] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
   const [loading, setLoading] = useState(false);
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [resetEmail, setResetEmail] = useState('');
@@ -106,6 +109,7 @@ const Login = ({ onClose, onLoginSuccess }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    setSuccessMessage('');
     setLoading(true);
 
     try {
@@ -149,12 +153,49 @@ const Login = ({ onClose, onLoginSuccess }) => {
           createdAt: new Date().toISOString()
         });
 
+        // Send email verification
+        try {
+          await sendEmailVerification(userCredential.user, {
+            url: window.location.origin,
+            handleCodeInApp: false
+          });
+        } catch (verificationError) {
+          console.error('Error sending verification email:', verificationError);
+          // Still sign out the user, but show a warning
+          await signOut(auth);
+          setError('Account created, but failed to send verification email. Please contact support.');
+          setLoading(false);
+          return;
+        }
+
+        // Sign out the user so they must verify email before logging in
+        await signOut(auth);
+
         console.log('User signed up successfully:', userCredential.user);
         
-        // Trigger login success callback
-        if (onLoginSuccess) {
-          onLoginSuccess(userCredential.user);
-        }
+        // Clear form data except email for convenience
+        const userEmail = formData.email;
+        setFormData({
+          email: userEmail, // Keep email for convenience
+          password: '',
+          confirmPassword: '',
+          name: '',
+          phoneNumber: '',
+          address: '',
+          city: '',
+          state: '',
+          pincode: ''
+        });
+        
+        // Switch to login mode immediately
+        setIsSignUp(false);
+        setError('');
+        setSuccessMessage('Account created successfully! A verification email has been sent to your inbox. Please check your email (including spam folder) and verify your email address before logging in.');
+        
+        // Clear success message after 8 seconds
+        setTimeout(() => {
+          setSuccessMessage('');
+        }, 8000);
       } else {
         // Login Logic
         const userCredential = await signInWithEmailAndPassword(
@@ -162,6 +203,15 @@ const Login = ({ onClose, onLoginSuccess }) => {
           formData.email,
           formData.password
         );
+
+        // Check if email is verified
+        if (!userCredential.user.emailVerified) {
+          // Sign out the user since email is not verified
+          await signOut(auth);
+          setError('Please verify your email before logging in. Check your inbox (and spam folder) for the verification email sent during signup.');
+          setLoading(false);
+          return;
+        }
 
         console.log('User logged in successfully:', userCredential.user);
         
@@ -236,6 +286,7 @@ const Login = ({ onClose, onLoginSuccess }) => {
           <h2>{isSignUp ? 'Sign Up' : 'Login'}</h2>
           
           {error && <div className="error-message">{error}</div>}
+          {successMessage && <div className="success-message">{successMessage}</div>}
           
           <form onSubmit={handleSubmit}>
             {isSignUp && (

@@ -194,7 +194,7 @@ const Orders = () => {
               <FaBoxOpen className="orders__empty-icon" />
               <h2>No Orders Yet</h2>
               <p>When you place an order, it will appear here.</p>
-              <a href="/products" className="orders__btn orders__btn--primary">
+              <a href={`${process.env.PUBLIC_URL}/products`} className="orders__btn orders__btn--primary">
                 Start Shopping
               </a>
             </div>

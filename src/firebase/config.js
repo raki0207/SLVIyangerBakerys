@@ -13,15 +13,14 @@ import { getFirestore } from "firebase/firestore";
 // 6. Copy the firebaseConfig object
 
 const firebaseConfig = {
-    apiKey: "AIzaSyAWGxXUOj4E1xmuDOg6I7pd0xBzulSYhp0",
-    authDomain: "book-my-camera.firebaseapp.com",
-    projectId: "book-my-camera",
-    storageBucket: "book-my-camera.firebasestorage.app",
-    messagingSenderId: "923768155103",
-    appId: "1:923768155103:web:cf2eacc81000ea7b36326a",
-    measurementId: "G-WPGSSX0N70"
-  };
-
+  apiKey: "AIzaSyDgIGKspLd6wAqomyumiBW8nFIHCHRB3PA",
+  authDomain: "slv-iyanger-bakery.firebaseapp.com",
+  projectId: "slv-iyanger-bakery",
+  storageBucket: "slv-iyanger-bakery.firebasestorage.app",
+  messagingSenderId: "540984354552",
+  appId: "1:540984354552:web:3a8538b0bc3786940d3d0d",
+  measurementId: "G-VJHRZMFND8"
+};
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 
