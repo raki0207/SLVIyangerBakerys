@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.css": "/SLVIyangerBakerys/static/css/main.f899c7e1.css",
-    "main.js": "/SLVIyangerBakerys/static/js/main.fd62172b.js",
+    "main.css": "/SLVIyangerBakerys/static/css/main.83a53e1f.css",
+    "main.js": "/SLVIyangerBakerys/static/js/main.68efc5a9.js",
     "static/js/453.04bdaf2d.chunk.js": "/SLVIyangerBakerys/static/js/453.04bdaf2d.chunk.js",
     "index.html": "/SLVIyangerBakerys/index.html",
-    "main.f899c7e1.css.map": "/SLVIyangerBakerys/static/css/main.f899c7e1.css.map",
-    "main.fd62172b.js.map": "/SLVIyangerBakerys/static/js/main.fd62172b.js.map",
+    "main.83a53e1f.css.map": "/SLVIyangerBakerys/static/css/main.83a53e1f.css.map",
+    "main.68efc5a9.js.map": "/SLVIyangerBakerys/static/js/main.68efc5a9.js.map",
     "453.04bdaf2d.chunk.js.map": "/SLVIyangerBakerys/static/js/453.04bdaf2d.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.f899c7e1.css",
-    "static/js/main.fd62172b.js"
+    "static/css/main.83a53e1f.css",
+    "static/js/main.68efc5a9.js"
   ]
 }
