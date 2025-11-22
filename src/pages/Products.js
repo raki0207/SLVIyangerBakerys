@@ -3,6 +3,7 @@ import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useLikedProducts } from '../context/LikedProductsContext';
 import { useCart } from '../context/CartContext';
 import { products } from '../utils/productsData';
+import { getProductDiscount, hasDiscount } from '../utils/discountUtils';
 import { MdFilterList, MdApps, MdMoreHoriz } from 'react-icons/md';
 import { FaCookie, FaBreadSlice, FaPepperHot } from 'react-icons/fa';
 import { GiCakeSlice, GiCroissant, GiBreadSlice, GiCupcake, GiSandwich, GiBottleVapors, GiCookie } from 'react-icons/gi';
@@ -238,8 +239,8 @@ const Products = () => {
           <div key={product.id} className="product-card">
             <div className="product-image">
               <img src={product.image} alt={product.name} className="product-img" />
-              {product.discount > 0 && (
-                <div className="discount-badge">-{product.discount}%</div>
+              {hasDiscount(product) && (
+                <div className="discount-badge">{getProductDiscount(product)}%</div>
               )}
               <div className="product-actions">
                 <button 
@@ -274,7 +275,7 @@ const Products = () => {
               <p>{product.shortDescription}</p>
               <div className="product-footer">
                 <div className="price-section">
-                  {product.discount > 0 && (
+                  {hasDiscount(product) && (
                     <span className="original-price">₹{product.originalPrice}</span>
                   )}
                   <span className="product-price">₹{product.price}</span>
@@ -341,12 +342,12 @@ const Products = () => {
                   <span className="review-count">({selectedProduct.reviews} reviews)</span>
                 </div>
                 <div className="modal-price-section">
-                  {selectedProduct.discount > 0 && (
+                  {hasDiscount(selectedProduct) && (
                     <span className="modal-original-price">₹{selectedProduct.originalPrice}</span>
                   )}
                   <span className="modal-price">₹{selectedProduct.price}<span className="price-period"></span></span>
-                  {selectedProduct.discount > 0 && (
-                    <span className="modal-discount-badge">Save {selectedProduct.discount}%</span>
+                  {hasDiscount(selectedProduct) && (
+                    <span className="modal-discount-badge">Save {getProductDiscount(selectedProduct)}%</span>
                   )}
                 </div>
               </div>

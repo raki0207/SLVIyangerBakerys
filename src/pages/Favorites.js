@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useLikedProducts } from '../context/LikedProductsContext';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
+import { getProductDiscount, hasDiscount } from '../utils/discountUtils';
 import { FaHeart, FaLock, FaHourglassHalf, FaStar } from 'react-icons/fa';
 import './Favorites.css';
 
@@ -97,7 +98,7 @@ const Favorites = () => {
       ) : (
         <div className="favorites-grid">
           {likedProducts.map(product => {
-            const hasDiscount = product.discount && product.discount > 0;
+            const productHasDiscount = hasDiscount(product);
             const displayPrice = typeof product.price === 'number' 
               ? `₹${product.price}` 
               : product.price;
@@ -106,8 +107,8 @@ const Favorites = () => {
               <div key={product.id} className="favorite-card">
                 <div className="favorite-image">
                   <img src={product.image} alt={product.name} className="favorite-img" />
-                  {hasDiscount && (
-                    <div className="fav-discount-badge">-{product.discount}%</div>
+                  {productHasDiscount && (
+                    <div className="fav-discount-badge">{getProductDiscount(product)}%</div>
                   )}
                   <div className="favorite-actions">
                     <button 
@@ -136,7 +137,7 @@ const Favorites = () => {
                   <p>{product.shortDescription}</p>
                   <div className="favorite-footer">
                     <div className="favorite-price-section">
-                      {hasDiscount && product.originalPrice && (
+                      {productHasDiscount && product.originalPrice && (
                         <span className="fav-original-price">₹{product.originalPrice}</span>
                       )}
                       <span className="favorite-price">{displayPrice}</span>
@@ -215,15 +216,15 @@ const Favorites = () => {
                   </div>
                 )}
                 <div className="modal-price-section">
-                  {selectedProduct.discount > 0 && selectedProduct.originalPrice && (
+                  {hasDiscount(selectedProduct) && selectedProduct.originalPrice && (
                     <span className="modal-original-price">₹{selectedProduct.originalPrice}</span>
                   )}
                   <span className="modal-price">
                     {typeof selectedProduct.price === 'number' ? `₹${selectedProduct.price}` : selectedProduct.price}
                     <span className="price-period"></span>
                   </span>
-                  {selectedProduct.discount > 0 && (
-                    <span className="modal-discount-badge">Save {selectedProduct.discount}%</span>
+                  {hasDiscount(selectedProduct) && (
+                    <span className="modal-discount-badge">Save {getProductDiscount(selectedProduct)}%</span>
                   )}
                 </div>
               </div>

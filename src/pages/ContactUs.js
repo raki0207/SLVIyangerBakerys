@@ -4,7 +4,9 @@ import './ContactUs.css';
 import {
   FaEnvelope,
   FaPhone,
-  FaMapMarkerAlt
+  FaMapMarkerAlt,
+  FaCheck,
+  FaTimes
 } from 'react-icons/fa';
 
 const ContactUs = () => {
@@ -12,9 +14,13 @@ const ContactUs = () => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
+    phone: '',
     subject: '',
     message: ''
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState(null); // 'success' or 'error'
+  const [submitMessage, setSubmitMessage] = useState('');
 
   const handleChange = (e) => {
     setFormData({
@@ -23,10 +29,70 @@ const ContactUs = () => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    alert('Message sent successfully! We will get back to you soon.');
-    setFormData({ name: '', email: '', subject: '', message: '' });
+    setIsSubmitting(true);
+    setSubmitStatus(null);
+    setSubmitMessage('');
+
+    try {
+      // Send data to Google Sheets via Google Apps Script
+      // See GOOGLE_SHEETS_SETUP.md for instructions on setting up Google Sheets
+      // Using URL-encoded format for better compatibility
+      const params = new URLSearchParams();
+      params.append('name', formData.name);
+      params.append('email', formData.email);
+      params.append('phone', formData.phone);
+      params.append('subject', formData.subject);
+      params.append('message', formData.message);
+      params.append('timestamp', new Date().toISOString());
+
+      const response = await fetch(
+        process.env.REACT_APP_GOOGLE_SCRIPT_URL || 
+        "https://script.google.com/macros/s/AKfycbx7d223WCIY5kGkjVCJTWmxoxr_uUX8zbRZYSxyRl7vV5NRtxR_OtazS0mgsPM0egs__w/exec",
+        {
+          method: "POST",
+          mode: "no-cors",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+          body: params.toString()
+        }
+      );
+
+      // Since we're using no-cors mode, we can't read the response
+      // But the data should be submitted successfully
+      setSubmitStatus('success');
+      setSubmitMessage('Your message has been sent successfully! We will get back to you soon.');
+      
+      // Reset form
+      setFormData({
+        name: '',
+        email: '',
+        phone: '',
+        subject: '',
+        message: ''
+      });
+
+      // Clear success message after 5 seconds
+      setTimeout(() => {
+        setSubmitStatus(null);
+        setSubmitMessage('');
+      }, 5000);
+
+    } catch (error) {
+      console.error("Error:", error);
+      setSubmitStatus('error');
+      setSubmitMessage('There was an error sending your message. Please try again or contact us directly.');
+      
+      // Clear error message after 5 seconds
+      setTimeout(() => {
+        setSubmitStatus(null);
+        setSubmitMessage('');
+      }, 5000);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -65,6 +131,18 @@ const ContactUs = () => {
               />
             </div>
             <div className="form-group">
+              <label htmlFor="phone">Phone Number</label>
+              <input
+                type="tel"
+                id="phone"
+                name="phone"
+                value={formData.phone}
+                onChange={handleChange}
+                required
+                placeholder="Enter your phone number"
+              />
+            </div>
+            <div className="form-group">
               <label htmlFor="subject">Subject</label>
               <input
                 type="text"
@@ -87,7 +165,21 @@ const ContactUs = () => {
                 placeholder="Tell us more about your inquiry..."
               ></textarea>
             </div>
-            <button type="submit" className="submit-button">Send Message</button>
+
+            {submitStatus && (
+              <div className={`submit-message ${submitStatus === 'success' ? 'success' : 'error'}`}>
+                {submitStatus === 'success' ? (
+                  <FaCheck style={{ marginRight: '8px' }} />
+                ) : (
+                  <FaTimes style={{ marginRight: '8px' }} />
+                )}
+                <span>{submitMessage}</span>
+              </div>
+            )}
+
+            <button type="submit" className="submit-button" disabled={isSubmitting}>
+              {isSubmitting ? 'Sending...' : 'Send Message'}
+            </button>
           </form>
         </div>
 

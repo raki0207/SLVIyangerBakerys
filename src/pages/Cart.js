@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { useNotification } from '../context/NotificationContext';
+import { getProductDiscount, hasDiscount } from '../utils/discountUtils';
 import { FaShoppingCart, FaLock, FaHourglassHalf, FaStar, FaClipboard, FaCheck, FaTrash } from 'react-icons/fa';
 import './Cart.css';
 
@@ -145,21 +146,21 @@ const Cart = () => {
                 const itemPrice = typeof item.price === 'number' 
                   ? item.price 
                   : parseFloat(item.price.replace('₹', ''));
-                const hasDiscount = item.discount && item.discount > 0;
+                const itemHasDiscount = hasDiscount(item);
                 
                 return (
                   <div key={item.id} className="cart-item">
                     <div className="item-icon">
                       <img src={item.image} alt={item.name} className="cart-item-img" />
-                      {hasDiscount && (
-                        <div className="cart-discount-badge">-{item.discount}%</div>
+                      {itemHasDiscount && (
+                        <div className="cart-discount-badge">{getProductDiscount(item)}%</div>
                       )}
                     </div>
                     <div className="item-details">
                       <h3>{item.name}</h3>
                       <p className="item-category">{item.category}</p>
                       <div className="item-price-section">
-                        {hasDiscount && item.originalPrice && (
+                        {itemHasDiscount && item.originalPrice && (
                           <span className="item-original-price">₹{item.originalPrice}</span>
                         )}
                         <p className="item-price">₹{itemPrice}</p>

@@ -339,7 +339,7 @@ export const products = [
     id: 22,
     name: 'Classic Peanut Butter Spread',
     category: 'Extra More',
-    originalPrice: 340,
+    originalPrice: 440,
     price: 270,
     discount: 21,
     rating: 4.8,

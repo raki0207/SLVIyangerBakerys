@@ -6,6 +6,7 @@ import {
 } from 'react-icons/fa';
 import { useLikedProducts } from '../context/LikedProductsContext';
 import { useCart } from '../context/CartContext';
+import { getProductDiscount, hasDiscount } from '../utils/discountUtils';
 
 const Home = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -17,6 +18,8 @@ const Home = () => {
     message: ''
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState(null); // 'success' or 'error'
+  const [submitMessage, setSubmitMessage] = useState('');
   const [visibleSections, setVisibleSections] = useState(new Set());
   const sectionRefs = useRef({});
   const [selectedProduct, setSelectedProduct] = useState(null);
@@ -103,8 +106,8 @@ const Home = () => {
       id: 204,
       name: 'Pumpkin Spice Basque Cheesecake',
       category: 'Dessert',
-      originalPrice: 1699,
-      price: 1399,
+      originalPrice: 1899,
+      price: 1499,
       discount: 18,
       rating: 4.6,
       reviews: 87,
@@ -475,18 +478,40 @@ const Home = () => {
   const handleFormSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setSubmitStatus(null);
+    setSubmitMessage('');
 
     try {
-      const response = await fetch("https://script.google.com/macros/s/AKfycbw5AMZlHOjaa_GfCm1m7MnJ66bH0uY_r5GDCbE6iPgrOhk-3T-hEW8J4v0S_w_U4CY/exec", {
-        method: "POST",
-        mode: "no-cors",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(formData)
-      });
+      // Send data to Google Sheets via Google Apps Script
+      // See GOOGLE_SHEETS_SETUP.md for instructions on setting up Google Sheets
+      // Using URL-encoded format for better compatibility
+      const params = new URLSearchParams();
+      params.append('name', formData.name);
+      params.append('email', formData.email);
+      params.append('phone', formData.phone);
+      params.append('subject', formData.subject);
+      params.append('message', formData.message);
+      params.append('timestamp', new Date().toISOString());
 
-      console.log("Success: Your message has been sent successfully!");
+      const response = await fetch(
+        process.env.REACT_APP_GOOGLE_SCRIPT_URL || 
+        "https://script.google.com/macros/s/AKfycbx7d223WCIY5kGkjVCJTWmxoxr_uUX8zbRZYSxyRl7vV5NRtxR_OtazS0mgsPM0egs__w/exec",
+        {
+          method: "POST",
+          mode: "no-cors",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+          body: params.toString()
+        }
+      );
+
+      // Since we're using no-cors mode, we can't read the response
+      // But the data should be submitted successfully
+      setSubmitStatus('success');
+      setSubmitMessage('Your message has been sent successfully! We will get back to you soon.');
+      
+      // Reset form
       setFormData({
         name: '',
         email: '',
@@ -494,9 +519,23 @@ const Home = () => {
         subject: '',
         message: ''
       });
+
+      // Clear success message after 5 seconds
+      setTimeout(() => {
+        setSubmitStatus(null);
+        setSubmitMessage('');
+      }, 5000);
+
     } catch (error) {
       console.error("Error:", error);
-      console.log("Error: There was an error sending your message. Please try again.");
+      setSubmitStatus('error');
+      setSubmitMessage('There was an error sending your message. Please try again or contact us directly.');
+      
+      // Clear error message after 5 seconds
+      setTimeout(() => {
+        setSubmitStatus(null);
+        setSubmitMessage('');
+      }, 5000);
     } finally {
       setIsSubmitting(false);
     }
@@ -575,8 +614,8 @@ const Home = () => {
               <div key={product.id} className="just-arrived-card">
                 <div className="just-arrived-image">
                   <img src={product.image} alt={product.name} className="just-arrived-img" />
-                  {product.discount > 0 && (
-                    <div className="discount-badge">-{product.discount}%</div>
+                  {hasDiscount(product) && (
+                    <div className="discount-badge">{getProductDiscount(product)}%</div>
                   )}
                   <div className="product-actions-btns">
                     <button
@@ -612,7 +651,7 @@ const Home = () => {
                   <p>{product.shortDescription}</p>
                   <div className="product-footer">
                     <div className="price-section">
-                      {product.discount > 0 && (
+                      {hasDiscount(product) && (
                         <span className="original-price">₹{product.originalPrice}</span>
                       )}
                       <span className="product-price">₹{product.price}</span>
@@ -681,8 +720,8 @@ const Home = () => {
               <div key={product.id} className="just-arrived-card">
                 <div className="just-arrived-image">
                   <img src={product.image} alt={product.name} className="just-arrived-img" />
-                  {product.discount > 0 && (
-                    <div className="discount-badge">-{product.discount}%</div>
+                  {hasDiscount(product) && (
+                    <div className="discount-badge">{getProductDiscount(product)}%</div>
                   )}
                   <div className="product-actions-btns">
                     <button
@@ -720,7 +759,7 @@ const Home = () => {
                   <p>{product.shortDescription}</p>
                   <div className="product-footer">
                     <div className="price-section">
-                      {product.discount > 0 && (
+                      {hasDiscount(product) && (
                         <span className="original-price">₹{product.originalPrice}</span>
                       )}
                       <span className="product-price">₹{product.price}</span>
@@ -1142,6 +1181,17 @@ const Home = () => {
                   ></textarea>
                 </div>
 
+                {submitStatus && (
+                  <div className={`submit-message ${submitStatus === 'success' ? 'success' : 'error'}`}>
+                    {submitStatus === 'success' ? (
+                      <FaCheck style={{ marginRight: '8px' }} />
+                    ) : (
+                      <FaTimes style={{ marginRight: '8px' }} />
+                    )}
+                    <span>{submitMessage}</span>
+                  </div>
+                )}
+
                 <button type="submit" className="submit-btn" disabled={isSubmitting}>
                   <FaEnvelope />
                   <span>{isSubmitting ? 'Sending...' : 'Send Message'}</span>
@@ -1177,7 +1227,7 @@ const Home = () => {
                 </div>
                 <div className="info-content">
                   <h4>Email Us</h4>
-                  <p>bookmycamera@gmail.com</p>
+                  <p>slviyangerbakery@gmail.com</p>
                 </div>
               </div>
 
@@ -1226,12 +1276,12 @@ const Home = () => {
                   <span className="review-count">({selectedProduct.reviews} reviews)</span>
                 </div>
                 <div className="modal-price-section">
-                  {selectedProduct.discount > 0 && (
+                  {hasDiscount(selectedProduct) && (
                     <span className="modal-original-price">₹{selectedProduct.originalPrice}</span>
                   )}
                   <span className="modal-price">₹{selectedProduct.price}<span className="price-period"></span></span>
-                  {selectedProduct.discount > 0 && (
-                    <span className="modal-discount-badge">Save {selectedProduct.discount}%</span>
+                  {hasDiscount(selectedProduct) && (
+                    <span className="modal-discount-badge">Save {getProductDiscount(selectedProduct)}%</span>
                   )}
                 </div>
               </div>
